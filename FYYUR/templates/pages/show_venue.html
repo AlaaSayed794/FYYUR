@@ -43,7 +43,7 @@
 		{% endif %}
 	</div>
 	<div class="col-sm-6">
-		<img src="{{ venue.image_link }}" alt="Venue Image" />
+		<img src="{{ venue.image_link }}" alt="Venue Image" onerror="this.onerror=null;this.src='../../static/img/notfound.png';"/>
 	</div>
 </div>
 <section>
@@ -52,7 +52,7 @@
 		{%for show in venue.upcoming_shows %}
 		<div class="col-sm-4">
 			<div class="tile tile-show">
-				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
+				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" onerror="this.onerror=null;this.src='../../static/img/notfound.png';"/>
 				<h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
 				<h6>{{ show.start_time|datetime('full') }}</h6>
 			</div>
@@ -66,7 +66,7 @@
 		{%for show in venue.past_shows %}
 		<div class="col-sm-4">
 			<div class="tile tile-show">
-				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" />
+				<img src="{{ show.artist_image_link }}" alt="Show Artist Image" onerror="this.onerror=null;this.src='../../static/img/notfound.png';"/>
 				<h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
 				<h6>{{ show.start_time|datetime('full') }}</h6>
 			</div>
@@ -74,6 +74,12 @@
 		{% endfor %}
 	</div>
 </section>
+<section>
+	<div class="row">
+		<a id= 'edit-btn' href="/venues/{{venue.id}}/edit" style="background-color:green;" class="btn btn-primary" >Edit venue</a>
+		<button id='delete-btn' class="btn btn-danger"  data-id ={{venue.id}}>Delete venue</button>
+	</div>	
+</section>
 
+<script type="text/javascript" src="/static/js/delete_venue.js"></script>
 {% endblock %}
-

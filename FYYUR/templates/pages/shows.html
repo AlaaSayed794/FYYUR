@@ -5,7 +5,7 @@
     {%for show in shows %}
     <div class="col-sm-4">
         <div class="tile tile-show">
-            <img src="{{ show.artist_image_link }}" alt="Artist Image" />
+            <img src="{{ show.artist_image_link }}" alt="Artist Image" onerror="this.onerror=null;this.src='../static/img/notfound.png';"/>
             <h4>{{ show.start_time|datetime('full') }}</h4>
             <h5><a href="/artists/{{ show.artist_id }}">{{ show.artist_name }}</a></h5>
             <p>playing at</p>

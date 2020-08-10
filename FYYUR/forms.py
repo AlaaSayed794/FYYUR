@@ -1,22 +1,23 @@
 from datetime import datetime
-from flask_wtf import Form
-from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
-from wtforms.validators import DataRequired, AnyOf, URL
-
+from flask_wtf import Form,FlaskForm
+from wtforms import StringField,IntegerField, SelectField, SelectMultipleField, DateTimeField,TextAreaField,BooleanField
+from wtforms.validators import DataRequired, AnyOf, URL,NumberRange
+from wtforms.widgets.html5 import NumberInput,DateTimeLocalInput,TelInput,URLInput
+from wtforms.fields.html5 import TelField
+    
 class ShowForm(Form):
-    artist_id = StringField(
-        'artist_id'
+    artist_id = SelectField(
+        'artist_id', validators=[DataRequired()]
     )
-    venue_id = StringField(
-        'venue_id'
+    venue_id = SelectField(
+        'venue_id', validators=[DataRequired()]
     )
     start_time = DateTimeField(
         'start_time',
-        validators=[DataRequired()],
-        default= datetime.today()
+        validators=[DataRequired()],format=('%y/%m/%d %H:%M'), widget=DateTimeLocalInput()
     )
 
-class VenueForm(Form):
+class VenueForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -82,14 +83,10 @@ class VenueForm(Form):
     address = StringField(
         'address', validators=[DataRequired()]
     )
-    phone = StringField(
-        'phone'
-    )
-    image_link = StringField(
-        'image_link'
+    phone = TelField(
+        'phone',widget=TelInput()
     )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -114,8 +111,16 @@ class VenueForm(Form):
         ]
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL()]
+        'facebook_link', validators=[URL()] , widget=URLInput()
     )
+    website = StringField(
+        'website', validators=[URL()] , widget=URLInput()
+    )
+    image_link = StringField(
+        'image_link', validators=[URL()] , widget=URLInput()
+    )
+    seeking_talent = BooleanField('seeking_talent')
+    seeking_description = TextAreaField('seeking_description')
 
 class ArtistForm(Form):
     name = StringField(
@@ -180,15 +185,11 @@ class ArtistForm(Form):
             ('WY', 'WY'),
         ]
     )
-    phone = StringField(
-        # TODO implement validation logic for state
-        'phone'
-    )
-    image_link = StringField(
-        'image_link'
+    phone = TelField(
+        
+        'phone',widget=TelInput(input_type='tel')
     )
     genres = SelectMultipleField(
-        # TODO implement enum restriction
         'genres', validators=[DataRequired()],
         choices=[
             ('Alternative', 'Alternative'),
@@ -213,8 +214,16 @@ class ArtistForm(Form):
         ]
     )
     facebook_link = StringField(
-        # TODO implement enum restriction
         'facebook_link', validators=[URL()]
     )
-
-# TODO IMPLEMENT NEW ARTIST FORM AND NEW SHOW FORM
+    facebook_link = StringField(
+        'facebook_link', validators=[URL()] , widget=URLInput()
+    )
+    website = StringField(
+        'website', validators=[URL()] , widget=URLInput()
+    )
+    image_link = StringField(
+        'image_link', validators=[URL()] , widget=URLInput()
+    )
+    seeking_venues = BooleanField('seeking_venues')
+    seeking_description = TextAreaField('seeking_description')
