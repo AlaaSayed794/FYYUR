@@ -52,6 +52,7 @@
 				<img src="{{ show.venue_image_link }}" alt="Show Venue Image" onerror="this.onerror=null;this.src='../../static/img/notfound.png';"/>
 				<h5><a href="/venues/{{ show.venue_id }}">{{ show.venue_name }}</a></h5>
 				<h6>{{ show.start_time|datetime('full') }}</h6>
+				<button id='delete-show' class="btn btn-danger btn-sm" data-id ={{show.id}} data-artist={{artist.id}}>Cancel show</button>
 			</div>
 		</div>
 		{% endfor %}
