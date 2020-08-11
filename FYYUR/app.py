@@ -139,7 +139,7 @@ def show_venue(venue_id):
     data = venue.to_data()
     return render_template('pages/show_venue.html', venue=data)
   except:
-    render_template('errors/404.html')
+    return(render_template('errors/404.html'))
 
  
   
@@ -336,7 +336,8 @@ def show_artist(artist_id):
     data = artist.to_data()
     return render_template('pages/show_artist.html', artist=data)
   except:
-    render_template('errors/404.html')
+    print('hello')
+    return(render_template('errors/404.html'))
   
 
 #  Create Artist
