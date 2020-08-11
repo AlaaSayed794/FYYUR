@@ -1,11 +1,26 @@
 from datetime import datetime
-from flask_wtf import Form,FlaskForm
+from flask_wtf import FlaskForm
 from wtforms import StringField,IntegerField, SelectField, SelectMultipleField, DateTimeField,TextAreaField,BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL,NumberRange,ValidationError
+from wtforms.validators import DataRequired, AnyOf, URL,NumberRange,ValidationError,InputRequired
 from wtforms.widgets.html5 import NumberInput,DateTimeLocalInput,TelInput,URLInput
 from wtforms.fields.html5 import TelField
 from choices import state_choices , genre_choices
-class ShowForm(Form):
+import phonenumbers
+
+def validate_phone(form,phone):
+    if(len(phone.data)):
+        try:
+            number = phonenumbers.parse(phone.data, None)
+            print('validation : ')
+            print(phonenumbers.is_valid_number(number))
+            if(not phonenumbers.is_valid_number(number)):
+                print('Im called1')
+                raise ValidationError('Please enter a valid phone number')
+        except:
+            print('Im called2')
+            raise ValidationError('Please enter a valid phone number')
+
+class ShowForm(FlaskForm):
     artist_id = SelectField(
         'artist_id', validators=[DataRequired()]
     )
@@ -30,8 +45,8 @@ class VenueForm(FlaskForm):
     address = StringField(
         'address', validators=[DataRequired()]
     )
-    phone = TelField(
-        'phone',widget=TelInput()
+    phone = StringField(
+        'phone',validators=[validate_phone],widget=TelInput()
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],choices=genre_choices
@@ -47,10 +62,9 @@ class VenueForm(FlaskForm):
     )
     seeking_talent = BooleanField('seeking_talent')
     seeking_description = TextAreaField('seeking_description')
-    def validate_name(self,name):
-        raise ValidationError('That username is taken. Please choose another.')
+        
 
-class ArtistForm(Form):
+class ArtistForm(FlaskForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -60,9 +74,8 @@ class ArtistForm(Form):
     state = SelectField(
         'state', validators=[DataRequired()],choices=state_choices
     )
-    phone = TelField(
-        
-        'phone',widget=TelInput(input_type='tel')
+    phone = StringField(
+        'phone',validators=[validate_phone]
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],choices=genre_choices
@@ -81,3 +94,4 @@ class ArtistForm(Form):
     )
     seeking_venues = BooleanField('seeking_venues')
     seeking_description = TextAreaField('seeking_description')
+

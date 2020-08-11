@@ -302,19 +302,24 @@ def show_venue(venue_id):
 @app.route('/venues/create', methods=['GET'])
 def create_venue_form():
   form = VenueForm()
-
   return render_template('forms/new_venue.html', form=form)
 
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
   form = VenueForm()
+  
+  
   error = False
   try:
     name = form.name.data
     if(db.session.query(Venue.name).filter_by(name=name).scalar() is not None):
       flash('The venue : "'+ name+'" already exists', 'error')
-      return(redirect(url_for('create_venue_form')))
+      return render_template('forms/new_venue.html', form=form)
+    form.validate()
+    if(len(form.phone.errors)>0):
+      flash(','.join(form.phone.errors))
+      return render_template('forms/new_venue.html', form=form)
     venue = Venue()
     venue.name = name
     venue.city = form.city.data
@@ -384,7 +389,11 @@ def edit_venue_submission(venue_id):
     name = form.name.data
     if((db.session.query(Venue.name).filter_by(name=name).scalar() is not None)and(venue.name!=name )):
       flash('The venue : "'+ name+'" already exists', 'error')
-      return(redirect(url_for('edit_venue',venue_id=venue_id)))
+      return render_template('forms/edit_venue.html', form=form,venue=venue)
+    form.validate()
+    if(len(form.phone.errors)>0):
+      flash(','.join(form.phone.errors))
+      return render_template('forms/edit_venue.html', form=form,venue=venue)
     venue = Venue.query.get(venue_id)
     venue.name = name
     venue.city = form.city.data
@@ -483,6 +492,52 @@ def show_artist(artist_id):
     render_template('errors/404.html')
   
 
+#  Create Artist
+#  ----------------------------------------------------------------
+
+@app.route('/artists/create', methods=['GET'])
+def create_artist_form():
+  form = ArtistForm()
+  return render_template('forms/new_artist.html', form=form)
+
+@app.route('/artists/create', methods=['POST'])
+def create_artist_submission():
+  error = False
+  form = ArtistForm()
+  try:
+    name = form.name.data
+    if(db.session.query(Artist.name).filter_by(name=name).scalar() is not None):
+      flash('The artist : "'+ name+'" already exists', 'error')
+      return render_template('forms/new_artist.html', form=form)
+    form.validate()
+    if(len(form.phone.errors)>0):
+      flash(','.join(form.phone.errors))
+      return render_template('forms/new_artist.html', form=form)
+    artist = Artist()
+    artist.name = name
+    artist.city = form.city.data
+    artist.state = form.state.data
+    artist.phone = form.phone.data
+    artist.genres = ','.join(request.form.getlist('genres'))
+    artist.facebook_link = form.facebook_link.data
+    artist.website = form.website.data
+    artist.image_link = form.image_link.data
+    artist.seeking_venues = form.seeking_venues.data
+    artist.seeking_description = form.seeking_description.data
+    db.session.add(artist)
+    db.session.commit()
+  except Exception as e:
+    error = True
+    print(e)
+    db.session.rollback()
+  finally:
+    db.session.close()
+  if error:
+    flash('An error occured. artist ' +request.form['name'] + ' Could not be listed.', 'error')
+  else:
+    flash('Artist ' + request.form['name'] +' was successfully listed.')
+  return(redirect(url_for('index')))
+
 #  Edit Artist
 #  ----------------------------------------------------------------
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
@@ -528,7 +583,11 @@ def edit_artist_submission(artist_id):
     artist = Artist.query.get(artist_id)
     if((db.session.query(Artist.name).filter_by(name=name).scalar() is not None)and(artist.name!=name)):
       flash('The artist : "'+ name+'" already exists', 'error')
-      return(redirect(url_for('edit_artist',artist_id=artist_id)))
+      return render_template('forms/edit_artist.html', form=form,artist=artist)
+    form.validate()
+    if(len(form.phone.errors)>0):
+      flash(','.join(form.phone.errors))
+      return render_template('forms/edit_artist.html', form=form,artist=artist)
     artist.name = name
     artist.city = form.city.data
     artist.state = form.state.data
@@ -553,48 +612,6 @@ def edit_artist_submission(artist_id):
 
   return redirect(url_for('show_artist', artist_id=artist_id))
 
-
-#  Create Artist
-#  ----------------------------------------------------------------
-
-@app.route('/artists/create', methods=['GET'])
-def create_artist_form():
-  form = ArtistForm()
-  return render_template('forms/new_artist.html', form=form)
-
-@app.route('/artists/create', methods=['POST'])
-def create_artist_submission():
-  error = False
-  form = ArtistForm()
-  try:
-    name = form.name.data
-    if(db.session.query(Artist.name).filter_by(name=name).scalar() is not None):
-      flash('The artist : "'+ name+'" already exists', 'error')
-      return(redirect(url_for('create_artist_form')))
-    artist = Artist()
-    artist.name = name
-    artist.city = form.city.data
-    artist.state = form.state.data
-    artist.phone = form.phone.data
-    artist.genres = ','.join(request.form.getlist('genres'))
-    artist.facebook_link = form.facebook_link.data
-    artist.website = form.website.data
-    artist.image_link = form.image_link.data
-    artist.seeking_venues = form.seeking_venues.data
-    artist.seeking_description = form.seeking_description.data
-    db.session.add(artist)
-    db.session.commit()
-  except Exception as e:
-    error = True
-    print(e)
-    db.session.rollback()
-  finally:
-    db.session.close()
-  if error:
-    flash('An error occured. artist ' +request.form['name'] + ' Could not be listed.', 'error')
-  else:
-    flash('Artist ' + request.form['name'] +' was successfully listed.')
-  return(redirect(url_for('index')))
 
 #  Delete Artist
 #  ----------------------------------------------------------------
