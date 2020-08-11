@@ -203,7 +203,13 @@ def format_datetime(value, format='medium'):
   except:
       returnedDate = str(date)
   return returnedDate
-  
+
+def format_phone(phone):
+  phone=phone.replace('-','')
+  if(len(phone)==10):
+    phone = phone[:3] +'-' +phone[3:6]+'-'+phone[6:]
+  return phone
+
 app.jinja_env.filters['datetime'] = format_datetime
 
 #----------------------------------------------------------------------------#
@@ -325,7 +331,7 @@ def create_venue_submission():
     venue.city = form.city.data
     venue.state = form.state.data
     venue.address = form.address.data
-    venue.phone = form.phone.data
+    venue.phone = format_phone(form.phone.data)
     venue.genres = ','.join(request.form.getlist('genres'))
     venue.facebook_link = form.facebook_link.data
     venue.website = form.website.data
@@ -399,7 +405,7 @@ def edit_venue_submission(venue_id):
     venue.city = form.city.data
     venue.state = form.state.data
     venue.address = form.address.data
-    venue.phone = form.phone.data
+    venue.phone = format_phone(form.phone.data)
     venue.genres = ','.join(request.form.getlist('genres'))
     venue.facebook_link = form.facebook_link.data
     venue.website = form.website.data
@@ -517,7 +523,7 @@ def create_artist_submission():
     artist.name = name
     artist.city = form.city.data
     artist.state = form.state.data
-    artist.phone = form.phone.data
+    artist.phone = format_phone(form.phone.data)
     artist.genres = ','.join(request.form.getlist('genres'))
     artist.facebook_link = form.facebook_link.data
     artist.website = form.website.data
@@ -591,7 +597,7 @@ def edit_artist_submission(artist_id):
     artist.name = name
     artist.city = form.city.data
     artist.state = form.state.data
-    artist.phone = form.phone.data
+    artist.phone = format_phone(form.phone.data)
     artist.genres = ','.join(request.form.getlist('genres'))
     artist.facebook_link = form.facebook_link.data
     artist.website = form.website.data

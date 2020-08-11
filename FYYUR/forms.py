@@ -1,24 +1,20 @@
 from datetime import datetime
 from flask_wtf import FlaskForm
 from wtforms import StringField,IntegerField, SelectField, SelectMultipleField, DateTimeField,TextAreaField,BooleanField
-from wtforms.validators import DataRequired, AnyOf, URL,NumberRange,ValidationError,InputRequired
+from wtforms.validators import DataRequired, URL,ValidationError
 from wtforms.widgets.html5 import NumberInput,DateTimeLocalInput,TelInput,URLInput
 from wtforms.fields.html5 import TelField
 from choices import state_choices , genre_choices
-import phonenumbers
 
 def validate_phone(form,phone):
-    if(len(phone.data)):
+    if(len(str(phone.data))):
         try:
-            number = phonenumbers.parse(phone.data, None)
-            print('validation : ')
-            print(phonenumbers.is_valid_number(number))
-            if(not phonenumbers.is_valid_number(number)):
-                print('Im called1')
-                raise ValidationError('Please enter a valid phone number')
+            number = str(phone.data).replace('-','')
+            check = int(number)
+            if (len(number)!=10):
+                raise ValidationError('Invalid phone number length should be 10 digits separated by "-" (also accepts blanks)')
         except:
-            print('Im called2')
-            raise ValidationError('Please enter a valid phone number')
+            raise ValidationError('Invalid phone number length should be 10 digits separated by "-" (also accepts blanks)')
 
 class ShowForm(FlaskForm):
     artist_id = SelectField(
@@ -46,7 +42,7 @@ class VenueForm(FlaskForm):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone',validators=[validate_phone],widget=TelInput()
+        'phone',validators=[validate_phone]
     )
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],choices=genre_choices
